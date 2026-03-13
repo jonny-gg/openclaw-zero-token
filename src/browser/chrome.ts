@@ -1,8 +1,4 @@
-import {
-  type ChildProcessWithoutNullStreams,
-  execSync,
-  spawn,
-} from "node:child_process";
+import { type ChildProcessWithoutNullStreams, execSync, spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -209,6 +205,9 @@ export async function isChromeCdpReady(
 export async function launchOpenClawChrome(
   resolved: ResolvedBrowserConfig,
   profile: ResolvedBrowserProfile,
+  opts: {
+    headless?: boolean;
+  } = {},
 ): Promise<RunningChrome> {
   if (!profile.cdpIsLoopback) {
     throw new Error(`Profile "${profile.name}" is remote; cannot launch local Chrome.`);
@@ -247,7 +246,7 @@ export async function launchOpenClawChrome(
       "--password-store=basic",
     ];
 
-    if (resolved.headless) {
+    if (opts.headless ?? resolved.headless) {
       // Best-effort; older Chromes may ignore.
       args.push("--headless=new");
       args.push("--disable-gpu");
